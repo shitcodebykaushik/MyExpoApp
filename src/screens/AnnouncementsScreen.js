@@ -7,17 +7,17 @@ const API_BASE_URL = "http://172.20.10.7:8000";
 
 const AnnouncementsScreen = () => {
   const { token } = useContext(AuthContext);
-  const [announcement, setAnnouncement] = useState(null);
+  const [announcements, setAnnouncements] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAnnouncements = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(`${API_BASE_URL}/student/announcements`, { headers });
+        const response = await axios.get(`${API_BASE_URL}/services/announcements`, { headers });
 
-        // ✅ Extracting announcement correctly from response
-        setAnnouncement(response.data || null);
+        // ✅ Extracting announcements correctly from response
+        setAnnouncements(response.data.announcements || []);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching announcements:", error);
@@ -41,11 +41,13 @@ const AnnouncementsScreen = () => {
     <ScrollView style={styles.container}>
       <Text style={styles.heading}>Announcements</Text>
 
-      {announcement ? (
-        <View style={styles.announcementCard}>
-          <Text style={styles.date}>{announcement.date || "No Date"}</Text>
-          <Text style={styles.text}>{announcement.announcement || "No announcement available."}</Text>
-        </View>
+      {announcements.length > 0 ? (
+        announcements.map((announcement, index) => (
+          <View key={index} style={styles.announcementCard}>
+            <Text style={styles.date}>{announcement.date || "No Date"}</Text>
+            <Text style={styles.text}>{announcement.message || "No announcement available."}</Text>
+          </View>
+        ))
       ) : (
         <Text style={styles.noData}>No announcements available.</Text>
       )}

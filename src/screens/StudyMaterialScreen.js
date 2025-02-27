@@ -4,21 +4,21 @@ import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import * as Linking from "expo-linking";
 
-const API_BASE_URL = "http://172.20.10.7:8000"; 
+const API_BASE_URL = "http://172.20.10.7:8000";
 
 const StudyMaterialScreen = () => {
   const { token } = useContext(AuthContext);
-  const [studyMaterials, setStudyMaterials] = useState([]); // ✅ Default empty array
+  const [studyMaterials, setStudyMaterials] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStudyMaterials = async () => {
       try {
         const headers = { Authorization: `Bearer ${token}` };
-        const response = await axios.get(`${API_BASE_URL}/student/study-material`, { headers });
+        const response = await axios.get(`${API_BASE_URL}/services/materials`, { headers });
 
-        // ✅ Ensure response is correctly structured and avoid null values
-        setStudyMaterials(response.data?.study_materials || []);
+        // ✅ Ensure the correct structure is used and handle potential missing data
+        setStudyMaterials(response.data || []);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching study materials:", error);
@@ -54,10 +54,10 @@ const StudyMaterialScreen = () => {
             renderItem={({ item }) => (
               <TouchableOpacity 
                 style={styles.card} 
-                onPress={() => Linking.openURL(item.link)} // ✅ Open PDF link
+                onPress={() => item.pdf_link ? Linking.openURL(item.pdf_link) : alert("No link available")}
               >
                 <Text style={styles.title}>{item.title || "No Title"}</Text>
-                <Text style={styles.link}>{item.link || "No Link Available"}</Text>
+                <Text style={styles.link}>{item.pdf_link || "No Link Available"}</Text>
               </TouchableOpacity>
             )}
           />

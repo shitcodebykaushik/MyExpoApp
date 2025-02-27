@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
       if (savedToken) {
         try {
           const headers = { Authorization: `Bearer ${savedToken}` };
-          const response = await axios.get(`${API_BASE_URL}/auth/validate`, { headers });
+          const response = await axios.get(`${API_BASE_URL}/user/details`, { headers });
 
           if (response.data.valid) {
             setToken(savedToken);
@@ -41,7 +41,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (registration_number, password) => {
     try {
-      const response = await axios.post(`${API_BASE_URL}/auth/login`, {
+      const response = await axios.post(`${API_BASE_URL}/login`, {
         registration_number,
         password,
       });
