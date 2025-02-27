@@ -1,26 +1,22 @@
 import React, { useContext } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
 import { NavigationContainer } from "@react-navigation/native";
-import LoginScreen from "../screens/LoginScreen";
-import HomeScreen from "../screens/HomeScreen";
-import ProfileScreen from "../screens/ProfileScreen";
 import { AuthContext } from "../context/AuthContext";
+import LoginScreen from "../screens/LoginScreen";
+import BottomTabNavigator from "./BottomTabNavigator";
 
 const Stack = createStackNavigator();
 
 const AppNavigator = () => {
-  const { token } = useContext(AuthContext);
+  const { token } = useContext(AuthContext); // Check if user is logged in
 
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {token ? (
-          <>
-            <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="Profile" component={ProfileScreen} />
-          </>
-        ) : (
+        {!token ? (
           <Stack.Screen name="Login" component={LoginScreen} />
+        ) : (
+          <Stack.Screen name="MainTabs" component={BottomTabNavigator} />
         )}
       </Stack.Navigator>
     </NavigationContainer>
