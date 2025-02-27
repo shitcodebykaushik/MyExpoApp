@@ -1,21 +1,17 @@
 import React, { useState, useContext } from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
-const API_BASE_URL = "http://172.20.10.7:8000"; // Update with your machine's IP
+const API_BASE_URL = "http://172.20.10.7:8000"; // Replace with your backend IP
 
-const LoginScreen = ({ navigation }) => {
+const LoginScreen = () => {
+  const { setToken } = useContext(AuthContext);
   const [registrationNumber, setRegistrationNumber] = useState("");
   const [password, setPassword] = useState("");
-  const { login } = useContext(AuthContext);
+  const [error, setError] = useState("");
 
   const handleLogin = async () => {
-    if (!registrationNumber || !password) {
-      Alert.alert("Error", "Please enter your credentials.");
-      return;
-    }
-
     try {
       const response = await axios.post(`${API_BASE_URL}/auth/login`, {
         registration_number: registrationNumber,
@@ -23,18 +19,18 @@ const LoginScreen = ({ navigation }) => {
       });
 
       if (response.data.access_token) {
-        login(response.data.access_token); // Store token in context
-        navigation.replace("Home"); // Navigate to Home screen
+        setToken(response.data.access_token);
+      } else {
+        setError("Invalid Credentials");
       }
-    } catch (error) {
-      console.error("Login Error:", error);
-      Alert.alert("Login Failed", "Invalid registration number or password.");
+    } catch (err) {
+      setError("Login Failed");
     }
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Student Login</Text>
+      <Text style={styles.title}>Login</Text>
       <TextInput
         style={styles.input}
         placeholder="Registration Number"
@@ -48,15 +44,21 @@ const LoginScreen = ({ navigation }) => {
         value={password}
         onChangeText={setPassword}
       />
-      <Button title="Login" onPress={handleLogin} />
+      {error ? <Text style={styles.error}>{error}</Text> : null}
+      <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
+        <Text style={styles.buttonText}>Login</Text>
+      </TouchableOpacity>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-  input: { borderWidth: 1, padding: 10, marginBottom: 10, borderRadius: 5 },
+  container: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#121212" },
+  title: { fontSize: 24, fontWeight: "bold", color: "white", marginBottom: 20 },
+  input: { width: "80%", padding: 10, backgroundColor: "#fff", marginBottom: 10, borderRadius: 5 },
+  error: { color: "red", marginBottom: 10 },
+  loginButton: { backgroundColor: "#FFA500", padding: 10, borderRadius: 5 },
+  buttonText: { color: "black", fontSize: 16, fontWeight: "bold" },
 });
 
 export default LoginScreen;
