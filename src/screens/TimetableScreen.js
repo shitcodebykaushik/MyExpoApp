@@ -27,7 +27,7 @@ const TimetableScreen = () => {
     };
 
     fetchTimetable();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (
@@ -42,7 +42,7 @@ const TimetableScreen = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <View style={styles.container}>
+      <ScrollView style={styles.container}>
         {/* Day Selector */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.daySelector}>
           {days.map((day) => (
@@ -59,6 +59,7 @@ const TimetableScreen = () => {
         {/* Timetable for Selected Day */}
         <Text style={styles.dayHeading}>{selectedDay}</Text>
 
+        {/* Timetable Cards */}
         <FlatList
           data={timetable[selectedDay] || []} // ✅ Ensures safe access
           keyExtractor={(item, index) => index.toString()}
@@ -68,35 +69,62 @@ const TimetableScreen = () => {
               <View style={styles.cardHeader}>
                 <Text style={styles.timeText}>{item.time}</Text>
               </View>
-              <Text style={styles.detailsText}>Lecture: {item.lecture || "TBD"}</Text>
-              <Text style={styles.detailsText}>Course: {item.subject}</Text>
-              <Text style={styles.detailsText}>Room: {item.room || "TBD"}</Text>
+              <View style={styles.cardContent}>
+                <Text style={styles.detailsText}>Lecture: {item.lecture || "TBD"}</Text>
+                <Text style={styles.detailsText}>Course: {item.subject}</Text>
+                <Text style={styles.detailsText}>Room: {item.room || "TBD"}</Text>
+              </View>
             </View>
           )}
         />
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#121212" }, 
+  safeArea: { flex: 1, backgroundColor: "#121212" },
   container: { flex: 1, padding: 20 },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   loadingText: { color: "white", marginTop: 10 },
 
-  daySelector: { flexDirection: "row", marginBottom: 15 },
+  // Day Selector styles
+  daySelector: { flexDirection: "row", marginBottom: 15, paddingLeft: 10 },
   dayButton: { padding: 12, marginHorizontal: 5, backgroundColor: "#333", borderRadius: 8 },
   activeDay: { backgroundColor: "#FFA500" },
   dayText: { color: "white", fontSize: 16 },
   activeDayText: { color: "black", fontWeight: "bold" },
 
+  // Heading for selected day
   dayHeading: { fontSize: 22, fontWeight: "bold", color: "white", marginBottom: 15, textAlign: "center" },
 
-  card: { flex: 1, backgroundColor: "#1E1E1E", padding: 15, margin: 8, borderRadius: 10, alignItems: "center", width: "48%" },
-  cardHeader: { backgroundColor: "black", padding: 8, borderRadius: 5, width: "100%", alignItems: "center" },
+  // Card styles for timetable
+  card: { 
+    flex: 1, 
+    backgroundColor: "#1E1E1E", 
+    padding: 15, 
+    margin: 8, 
+    borderRadius: 10, 
+    alignItems: "flex-start", 
+    justifyContent: "flex-start", 
+    width: "48%" 
+  },
+  cardHeader: { 
+    backgroundColor: "black", 
+    padding: 8, 
+    borderRadius: 5, 
+    width: "100%", 
+    marginBottom: 10,
+    alignItems: "center" 
+  },
   timeText: { color: "white", fontSize: 16, fontWeight: "bold" },
-  detailsText: { color: "#FFA500", fontSize: 14, marginTop: 5, textAlign: "center" },
+  cardContent: {
+    flex: 1,
+    justifyContent: "space-evenly",
+    alignItems: "flex-start",
+    marginTop: 10
+  },
+  detailsText: { color: "#FFA500", fontSize: 14, marginTop: 5, textAlign: "left" },
 });
 
 export default TimetableScreen;

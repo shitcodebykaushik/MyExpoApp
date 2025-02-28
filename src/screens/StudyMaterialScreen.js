@@ -27,7 +27,7 @@ const StudyMaterialScreen = () => {
     };
 
     fetchStudyMaterials();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (

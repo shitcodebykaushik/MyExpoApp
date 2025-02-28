@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView } from "react-native";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
@@ -26,37 +26,42 @@ const ExamScreen = () => {
     };
 
     fetchExamDetails();
-  }, []);
+  }, [token]);
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#FFA500" />
-        <Text style={styles.loadingText}>Loading exam details...</Text>
-      </View>
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FFA500" />
+          <Text style={styles.loadingText}>Loading exam details...</Text>
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.heading}>Exam Details</Text>
+    <SafeAreaView style={styles.safeArea}>
+      <ScrollView style={styles.container}>
+        <Text style={styles.heading}>Exam Details</Text>
 
-      {examDetails.length === 0 ? (
-        <Text style={styles.noDataText}>No upcoming exams.</Text>
-      ) : (
-        examDetails.map((exam, index) => (
-          <View key={index} style={styles.examCard}>
-            <Text style={styles.subjectText}>{exam.subject}</Text>
-            <Text style={styles.dateText}>Date: {exam.date}</Text>
-          </View>
-        ))
-      )}
-    </ScrollView>
+        {examDetails.length === 0 ? (
+          <Text style={styles.noDataText}>No upcoming exams.</Text>
+        ) : (
+          examDetails.map((exam, index) => (
+            <View key={index} style={styles.examCard}>
+              <Text style={styles.subjectText}>{exam.subject}</Text>
+              <Text style={styles.dateText}>Date: {exam.date}</Text>
+            </View>
+          ))
+        )}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#121212", padding: 20 },
+  safeArea: { flex: 1, backgroundColor: "#121212" },
+  container: { flex: 1, padding: 20 },
   heading: { fontSize: 22, fontWeight: "bold", color: "white", marginBottom: 10 },
   noDataText: { fontSize: 18, color: "gray", textAlign: "center", marginTop: 20 },
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
