@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, FlatList, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, FlatList, SafeAreaView } from "react-native";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import { Circle, Svg } from "react-native-svg";
 
 const API_BASE_URL = "http://172.20.10.7:8000";
 
-const AttendanceScreen = () => {
+const AttendanceScreen = ({ navigation }) => {
   const { token } = useContext(AuthContext);
   const [attendance, setAttendance] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -42,40 +43,65 @@ const AttendanceScreen = () => {
       <ScrollView style={styles.container}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity>
-            <Text style={styles.backText}>{"< Back"}</Text>
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Attendance</Text>
-        </View>
-
-        {/* Faculty & Student Details */}
-        <View style={styles.infoCard}>
-          <Text style={styles.infoText}>Faculty: {attendance.faculty_name || "N/A"}</Text>
-          <Text style={styles.infoText}>Section: {attendance.section || "N/A"}</Text>
-          <Text style={styles.infoText}>Roll No: {attendance.roll_number || "N/A"}</Text>
+          <Text onPress={() => navigation.goBack()} style={styles.backText}>{""}</Text>
+          <Text style={styles.headerTitle}></Text>
+          <View style={{ width: 50 }} /> {/* Empty space for balance */}
         </View>
 
         {/* Aggregate Attendance */}
         <View style={styles.aggregateContainer}>
-          <Text style={styles.aggregateText}>Overall Attendance</Text>
+          <Text style={styles.aggregateText}>AGGREGATE ATTENDANCE</Text>
           <View style={styles.aggregateBadge}>
             <Text style={styles.aggregateBadgeText}>{attendance?.overall_percentage || "--"}%</Text>
           </View>
         </View>
 
         {/* Subject-Wise Attendance */}
-        <Text style={styles.sectionTitle}>Subject-wise Attendance</Text>
-
         <FlatList
           data={attendance.subjects || []}
           keyExtractor={(item, index) => index.toString()}
           renderItem={({ item }) => (
             <View style={styles.subjectCard}>
-              <Text style={styles.subjectTitle}>{item.subject}</Text>
-              <Text style={styles.subjectDetail}>Last Class: {item.last_class_attended}</Text>
-              <Text style={styles.subjectDetail}>Duty Leaves: {item.duty_leaves}</Text>
-              <View style={[styles.subjectAttendance, { backgroundColor: getAttendanceColor(item.attendance_percentage) }]}>
-                <Text style={styles.attendanceText}>{item.attendance_percentage}%</Text>
+              {/* Attendance Percentage in Corner */}
+              <View style={styles.circularProgressContainer}>
+                <Svg width={55} height={55} viewBox="0 0 100 100">
+                  {/* Background Circle */}
+                  <Circle cx="50" cy="50" r="40" stroke="#2C2C2C" strokeWidth="8" fill="none" />
+                  {/* Progress Circle */}
+                  <Circle
+                    cx="50"
+                    cy="50"
+                    r="40"
+                    stroke={getAttendanceColor(item.attendance_percentage)}
+                    strokeWidth="8"
+                    strokeDasharray={`${(item.attendance_percentage / 100) * 251}, 251`}
+                    strokeLinecap="round"
+                    fill="none"
+                    transform="rotate(-90,50,50)"
+                  />
+                </Svg>
+                <Text style={styles.percentageText}>{item.attendance_percentage}%</Text>
+              </View>
+
+              {/* Subject Title & Group */}
+              <View style={styles.subjectHeader}>
+                <Text style={styles.subjectTitle}>{item.subject}</Text>
+                <View style={styles.groupBadge}>
+                  <Text style={styles.groupText}>Group: 1</Text>
+                </View>
+              </View>
+
+              {/* Faculty Details */}
+              <Text style={styles.facultyText}>Faculty: {item.faculty || "N/A"}</Text>
+              <Text style={styles.facultyText}>Faculty Seating: {item.faculty_seating || "N/A"}</Text>
+              <Text style={styles.facultyText}>Last Attended: {item.last_class_attended || "N/A"}</Text>
+              <Text style={styles.facultyText}>Attended/Delivered: {item.attended}/{item.delivered}</Text>
+              <Text style={styles.facultyText}>Duty Leaves: {item.duty_leaves}</Text>
+
+              {/* Section & Roll Number */}
+              <View style={styles.sectionRoll}>
+                <Text style={styles.sectionText}>Section: <Text style={styles.highlightedText}>{item.section || "N/A"}</Text></Text>
+                <Text style={styles.sectionText}>Roll No: <Text style={styles.highlightedText}>{item.roll_number || "N/A"}</Text></Text>
               </View>
             </View>
           )}
@@ -85,12 +111,14 @@ const AttendanceScreen = () => {
   );
 };
 
-// Function to color attendance based on percentage
+// Function to determine the progress color
 const getAttendanceColor = (percentage) => {
-  if (percentage >= 90) return "#32CD32"; // Green for High Attendance
-  if (percentage >= 75) return "#FFA500"; // Orange for Moderate Attendance
-  return "#FF4500"; // Red for Low Attendance
+  if (percentage >= 90) return "#32CD32"; // Green
+  if (percentage >= 75) return "#FFA500"; // Orange
+  return "#FF4500"; // Red
 };
+
+// ============================ STYLES ============================
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#121212" },
@@ -102,22 +130,26 @@ const styles = StyleSheet.create({
   backText: { fontSize: 18, color: "#FFA500", fontWeight: "bold" },
   headerTitle: { fontSize: 22, fontWeight: "bold", color: "white" },
 
-  infoCard: { backgroundColor: "#1E1E1E", padding: 15, borderRadius: 10, marginBottom: 15 },
-  infoText: { fontSize: 16, color: "white", marginBottom: 5 },
-
-  aggregateContainer: { flexDirection: "row", justifyContent: "space-between", backgroundColor: "white", padding: 15, borderRadius: 10, alignItems: "center", marginBottom: 20 },
-  aggregateText: { fontSize: 18, fontWeight: "bold", color: "black" },
-  aggregateBadge: { backgroundColor: "#FFA500", padding: 8, borderRadius: 5 },
+  aggregateContainer: { backgroundColor: "#1E1E1E", padding: 15, borderRadius: 10, alignItems: "center", marginBottom: 20 },
+  aggregateText: { fontSize: 18, fontWeight: "bold", color: "white" },
+  aggregateBadge: { backgroundColor: "#FFA500", padding: 8, borderRadius: 5, marginTop: 5 },
   aggregateBadgeText: { color: "white", fontSize: 16, fontWeight: "bold" },
 
-  sectionTitle: { fontSize: 20, fontWeight: "bold", color: "white", marginBottom: 10 },
+  subjectCard: { backgroundColor: "#1E1E1E", padding: 15, borderRadius: 10, marginBottom: 15, position: "relative" },
+  subjectHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 },
+  subjectTitle: { fontSize: 18, fontWeight: "bold", color: "white" },
 
-  subjectCard: { backgroundColor: "#1E1E1E", padding: 15, borderRadius: 10, marginBottom: 10 },
-  subjectTitle: { fontSize: 18, fontWeight: "bold", color: "#FFA500" },
-  subjectDetail: { fontSize: 14, color: "white", marginTop: 5 },
-  
-  subjectAttendance: { marginTop: 10, padding: 10, borderRadius: 8, alignItems: "center" },
-  attendanceText: { fontSize: 16, fontWeight: "bold", color: "white" },
+  facultyText: { fontSize: 14, color: "white", marginBottom: 5 },
+
+  groupBadge: { backgroundColor: "#FF6347", padding: 5, borderRadius: 5 },
+  groupText: { fontSize: 14, color: "white", fontWeight: "bold" },
+
+  circularProgressContainer: { position: "absolute", top: 50, right: 10 },
+  percentageText: { fontSize: 14, fontWeight: "bold", color: "white", position: "absolute", top: 22, left: 10 },
+
+  sectionRoll: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
+  sectionText: { fontSize: 14, color: "white" },
+  highlightedText: { fontWeight: "bold", color: "#FFA500" },
 });
 
 export default AttendanceScreen;
