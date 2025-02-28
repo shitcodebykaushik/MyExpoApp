@@ -1,18 +1,24 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { 
-  View, Text, StyleSheet, TouchableOpacity, FlatList, ActivityIndicator, 
-  ScrollView, SafeAreaView, Modal 
+  View, Text, StyleSheet, TouchableOpacity, FlatList, 
+  ScrollView, SafeAreaView, Image 
 } from "react-native";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const HomeScreen = ({ navigation }) => {
   const services = [
-    { id: "1", name: "Attendance", icon: "calendar-check", value: "90%", screen: "AttendanceScreen" },
-    { id: "2", name: "CGPA", icon: "chart-line", value: "7.5", screen: "CGPAScreen" },
-    { id: "3", name: "Exams", icon: "file-document", value: "2", screen: "ExamScreen" },
-    { id: "4", name: "Study Material", icon: "book-open", value: "10", screen: "StudyMaterialScreen" },
-    { id: "5", name: "Timetable", icon: "clock-outline", value: "7", screen: "TimetableScreen" },
-    { id: "6", name: "Announcements", icon: "bell-outline", value: "2", screen: "AnnouncementsScreen" },
+    { id: "1", name: "Attendance", icon: "checked-checkbox", value: "90%", screen: "AttendanceScreen" },
+    { id: "2", name: "CGPA", icon: "combo-chart", value: "7.5", screen: "CGPAScreen" },
+    { id: "3", name: "Exams", icon: "exam", value: "2", screen: "ExamScreen" },
+    { id: "4", name: "Study Material", icon: "books", value: "10", screen: "StudyMaterialScreen" },
+    { id: "5", name: "Timetable", icon: "timetable", value: "7", screen: "TimetableScreen" },
+    { id: "6", name: "Announcements", icon: "appointment-reminders", value: "2", screen: "AnnouncementsScreen" },
+  ];
+
+  const bottomBoxes = [
+    { id: "1", text: "Upcoming Holidays", icon: "holiday" },
+    { id: "2", text: "Library Updates", icon: "book" },
+    { id: "3", text: "New Courses", icon: "education" },
+    { id: "4", text: "Events & Seminars", icon: "event" },
   ];
 
   return (
@@ -44,16 +50,39 @@ const HomeScreen = ({ navigation }) => {
                 <Text style={styles.badgeText}>{item.value}</Text>
               </View>
 
-              {/* Icon */}
-              <MaterialCommunityIcons name={item.icon} size={30} color="#FFA500" />
+              {/* Custom Icon from Icons8 */}
+              <Image 
+                source={{ uri: `https://img.icons8.com/ios/100/ffffff/${item.icon}.png` }} 
+                style={styles.iconImage} 
+              />
+
               <Text style={styles.serviceText}>{item.name}</Text>
             </TouchableOpacity>
           )}
         />
+
+        {/* Dark Themed Horizontal Scrollable Bottom Boxes */}
+        <View style={styles.bottomContainer}>
+          <Text style={styles.bottomHeader}>Latest Updates</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            {bottomBoxes.map((box) => (
+              <View key={box.id} style={styles.bottomBox}>
+                {/* Icons in Bottom Boxes */}
+                <Image 
+                  source={{ uri: `https://img.icons8.com/ios/50/ffffff/${box.icon}.png` }} 
+                  style={styles.bottomBoxIcon} 
+                />
+                <Text style={styles.bottomBoxText}>{box.text}</Text>
+              </View>
+            ))}
+          </ScrollView>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+// ============================ STYLES ============================
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#121212" },
@@ -72,7 +101,27 @@ const styles = StyleSheet.create({
     borderRadius: 12, minWidth: 40, justifyContent: "center", alignItems: "center" 
   },
   badgeText: { color: "black", fontSize: 14, fontWeight: "bold" },
+
+  iconImage: { width: 50, height: 50, marginBottom: 5 },
+
   serviceText: { color: "white", marginTop: 5, fontSize: 16 },
+
+  bottomContainer: { 
+    marginTop: 20, backgroundColor: "#1E1E1E", paddingVertical: 15, paddingHorizontal: 10, 
+    borderRadius: 10, 
+  },
+  bottomHeader: { fontSize: 18, fontWeight: "bold", color: "white", marginBottom: 10 },
+
+  bottomBox: {
+    backgroundColor: "#2C2C2C", 
+    padding: 15, 
+    borderRadius: 10, 
+    marginRight: 10, 
+    alignItems: "center",
+    minWidth: 150,
+  },
+  bottomBoxIcon: { width: 30, height: 30, marginBottom: 5 },
+  bottomBoxText: { fontSize: 16, color: "white", fontWeight: "bold" },
 });
 
 export default HomeScreen;

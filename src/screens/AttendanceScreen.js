@@ -87,7 +87,7 @@ const AttendanceScreen = ({ navigation }) => {
               <View style={styles.subjectHeader}>
                 <Text style={styles.subjectTitle}>{item.subject}</Text>
                 <View style={styles.groupBadge}>
-                  <Text style={styles.groupText}>Group: 1</Text>
+                  <Text style={styles.groupText}>Group:1</Text>
                 </View>
               </View>
 
