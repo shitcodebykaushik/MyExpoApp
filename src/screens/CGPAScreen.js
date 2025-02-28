@@ -18,7 +18,7 @@ const CGPAScreen = () => {
         const headers = { Authorization: `Bearer ${token}` };
         const response = await axios.get(`${API_BASE_URL}/services/cgpa`, { headers });
 
-        // Transform response to match UI structure
+       
         const formattedCGPA = Object.entries(response.data.semesters).map(([semester, percentage]) => ({
           semester, // "Semester 1"
           percentage, // 70
