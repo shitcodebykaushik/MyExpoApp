@@ -1,5 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, SafeAreaView } from "react-native";
+import { 
+  View, Text, StyleSheet, ScrollView, ActivityIndicator, 
+  SafeAreaView, FlatList 
+} from "react-native";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 
@@ -42,22 +45,32 @@ const ExamScreen = () => {
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView style={styles.container}>
-        <Text style={styles.heading}>Exam Details</Text>
+        <Text style={styles.heading}>Upcoming Exams</Text>
 
         {examDetails.length === 0 ? (
           <Text style={styles.noDataText}>No upcoming exams.</Text>
         ) : (
-          examDetails.map((exam, index) => (
-            <View key={index} style={styles.examCard}>
-              <Text style={styles.subjectText}>{exam.subject}</Text>
-              <Text style={styles.dateText}>Date: {exam.date}</Text>
-            </View>
-          ))
+          <View style={styles.horizontalContainer}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {examDetails.map((exam, index) => (
+                <View key={index} style={styles.examCard}>
+                  <Text style={styles.subjectText}>{exam.subject}</Text>
+                  <Text style={styles.dateText}>📅 {exam.date}</Text>
+                  <View style={styles.examInfo}>
+                    <Text style={styles.infoText}>Duration: 3 hrs</Text>
+                    <Text style={styles.infoText}>Room: CAP 512</Text>
+                  </View>
+                </View>
+              ))}
+            </ScrollView>
+          </View>
         )}
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+// ============================ STYLES ============================
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1, backgroundColor: "#121212" },
@@ -67,9 +80,22 @@ const styles = StyleSheet.create({
   loadingContainer: { flex: 1, justifyContent: "center", alignItems: "center" },
   loadingText: { color: "white", marginTop: 10 },
 
-  examCard: { backgroundColor: "#1E1E1E", padding: 15, borderRadius: 8, marginBottom: 10 },
-  subjectText: { fontSize: 18, fontWeight: "bold", color: "white" },
-  dateText: { fontSize: 16, color: "#FFA500" },
+  horizontalContainer: { marginTop: 10 },
+  
+  examCard: { 
+    backgroundColor: "#1E1E1E", 
+    padding: 20, 
+    borderRadius: 10, 
+    marginRight: 10, 
+    width: 180, 
+    justifyContent: "space-between",
+  },
+
+  subjectText: { fontSize: 18, fontWeight: "bold", color: "#FFA500", marginBottom: 5 },
+  dateText: { fontSize: 16, color: "white", marginBottom: 5 },
+
+  examInfo: { marginTop: 10, borderTopWidth: 1, borderTopColor: "#333", paddingTop: 10 },
+  infoText: { fontSize: 14, color: "gray", marginTop: 5 },
 });
 
 export default ExamScreen;
